@@ -1,5 +1,6 @@
 import java.util.*;
-
+//This is an example of the strategy pattern
+//For cs3250
 interface SearchBehaviour<T,S>{
     //T is the object, S is the value
     boolean search(T obj, S v);
