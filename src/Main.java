@@ -1,6 +1,7 @@
 import java.util.*;
 //This is an example of the strategy pattern
 //For cs3250
+
 interface SearchBehaviour<T,S>{
     //T is the object, S is the value
     boolean search(T obj, S v);
@@ -22,6 +23,7 @@ class AllItems<T>{
     private ArrayList<T> _items;
 
     public AllItems(){_items = new ArrayList<T>();}
+    public AllItems(int size){_items = new ArrayList<T>(size);}
     public void addItem(T t){_items.add(t);}
     public void removeItem(int i){
         if(i>= 0 && i <_items.size())
@@ -73,6 +75,9 @@ class AllStudents{
     public AllStudents(){
         _students = new AllItems<Student>();
     }
+    public AllStudents(int size){
+        _students = new AllItems<>(size);
+    }
     public void addStudent(String id){
         _students.addItem(new Student(id));
     }
@@ -81,6 +86,14 @@ class AllStudents{
     }
     public int findStudent(String id){
         return _students.findItem(id, new StudentSearch());
+    }
+    public boolean modifyStudentID(String id, String newID){
+        int idx = findStudent(id);
+        if(idx<0) return false;
+        else {
+            _students.getItem(idx).setID(newID);
+            return true;
+        }
     }
     public void removeStudent(String id){
         int i = _students.findItem(id, new StudentSearch());
@@ -94,12 +107,16 @@ class AllStudents{
             s += (_students.getItem(i).toString() + "\n");
         return s;
     }
+    public int size(){
+        return _students.size();
+    }
 }
 class AllCourses{
     private AllItems<Course> _courses;
     public AllCourses(){
         _courses = new AllItems<Course>();
     }
+    public AllCourses(int size) {_courses = new AllItems<>(size);}
     public void addCourse(String cnum, int c){
         _courses.addItem(new Course(cnum, c));
     }
@@ -108,6 +125,16 @@ class AllCourses{
     }
     public int findCourse(String cnum){
         return _courses.findItem(cnum, new CourseSearch());
+    }
+    public boolean modifyCourse(String cnum, String newCnum){
+        int idx = findCourse(cnum);
+        if(idx <0) {
+            return false;
+        }
+        else{
+            _courses.getItem(idx).setNumber(newCnum);
+            return true;
+        }
     }
     public void removeCourse(String cnum){
         int i = _courses.findItem(cnum, new CourseSearch());
@@ -118,6 +145,9 @@ class AllCourses{
         for (int i=0; i<_courses.size(); i++)
             s += (_courses.getItem(i).toString() + "\n");
         return s;
+    }
+    public int size(){
+        return _courses.size();
     }
 }
 
