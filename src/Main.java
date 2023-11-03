@@ -18,6 +18,10 @@ class CourseSearch implements SearchBehaviour<Course, String>{
         return obj.getNumber().equals(v);
     }
 }
+class CnumSearch implements SearchBehaviour<String, String>{
+    @Override
+    public boolean search(String obj, String v){return obj.equals(v);}
+}
 
 class AllItems<T>{
     private ArrayList<T> _items;
@@ -28,14 +32,6 @@ class AllItems<T>{
     public void removeItem(int i){
         if(i>= 0 && i <_items.size())
             _items.remove(i);
-    }
-    public <S> boolean isItem(S v, SearchBehaviour<T, S> sb){
-        for(T item : _items){
-            if(sb.search(item, v)){
-                return true;
-            }
-        }
-        return false;
     }
     public <S> int findItem(S v, SearchBehaviour<T, S> sb){
         for(int i=0;i< _items.size();i++){
@@ -82,14 +78,17 @@ class AllStudents{
         _students.addItem(new Student(id));
     }
     public boolean isStudent(String id){
-        return _students.isItem(id, new StudentSearch());
+        if(_students.findItem(id, new StudentSearch()) == -1)
+            return false;
+        return true;
     }
     public int findStudent(String id){
         return _students.findItem(id, new StudentSearch());
     }
     public boolean modifyStudentID(String id, String newID){
         int idx = findStudent(id);
-        if(idx<0) return false;
+        if(idx<0)
+            return false;
         else {
             _students.getItem(idx).setID(newID);
             return true;
@@ -121,7 +120,9 @@ class AllCourses{
         _courses.addItem(new Course(cnum, c));
     }
     public boolean isCourse(String cnum){
-        return _courses.isItem(cnum, new CourseSearch());
+        if(_courses.findItem(cnum, new CourseSearch()) != -1)
+            return true;
+        return false;
     }
     public int findCourse(String cnum){
         return _courses.findItem(cnum, new CourseSearch());
@@ -148,6 +149,22 @@ class AllCourses{
     }
     public int size(){
         return _courses.size();
+    }
+}
+class Enrollment{
+    private HashMap<String, AllItems<String>> _enroll;
+    public Enrollment(){_enroll = new HashMap<String, AllItems<String>>();}
+    public boolean dropStudentFromCourse(String id, String cnum){
+        // drops course from the students set of courses
+        // if no other courses exist for student drop student from hashmap
+        AllItems<String> t = _enroll.get(id);
+        int i = t.findItem(cnum, new CnumSearch());
+        if(i == -1)
+            return false;
+        t.removeItem(i);
+        if(t.size() == 0)
+            _enroll.remove(id);
+        return true;
     }
 }
 
